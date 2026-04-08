@@ -1,0 +1,92 @@
+/* styles.css */
+
+/* Tailwind custom colors are configured in script.js */
+/* Global resets & glassmorphism */
+@layer base {
+    * {
+        transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+        transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+        transition-duration: 150ms;
+    }
+}
+
+.glass-card {
+    background: rgba(255,255,255,0.08);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255,255,255,0.15);
+    box-shadow: 0 8px 32px -12px rgb(255 215 0);
+}
+
+.glass-input {
+    background: rgba(255,255,255,0.08);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.15);
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+/* Subtle animations */
+.fade-in {
+    animation: fadeInUp 0.8s ease forwards;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Mobile menu animation */
+#mobile-menu {
+    animation: slideDown 0.3s ease forwards;
+}
+
+@keyframes slideDown {
+    from { transform: translateY(-20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+/* Hero background overlay fine-tuning */
+#hero-background::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(0, 31, 63, 0.4) 0%, rgba(0, 0, 0, 0.7) 70%);
+    pointer-events: none;
+}
+
+/* Circular Favicon for Apple Touch Icon & displayed images */
+.apple-touch-icon,
+[rel="apple-touch-icon"],
+img[src*="IMG_0829.jpeg"] {
+    border-radius: 50% !important;           /* Makes it perfectly circular */
+    overflow: hidden;                        /* Clean edges */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15); /* Optional soft shadow for depth */
+    background: #ffffff;                     /* Optional white background behind circle */
+    padding: 4px;                            /* Creates a small frame/padding effect */
+    box-sizing: border-box;
+}
+
+/* Extra polish for Apple devices */
+@media screen and (-webkit-min-device-pixel-ratio: 2) {
+    [rel="apple-touch-icon"] {
+        border-radius: 50%;
+    }
+}
+
+
+.favicon-img {
+    width: 48px;          /* Adjust size as needed */
+    height: 48px;
+    border-radius: 50%;
+    object-fit: cover;    /* Ensures the image fills the circle nicely */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    border: 3px solid #ffd700;   /* Optional gold border to match your button color */
+}

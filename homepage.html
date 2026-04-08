@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content=" Dofen consultancy Services Ltd - Your Safety, Our Priority">
+    <title>Dofen Consultacy Services Limited</title>
+    
+    
+     <!-- Favicon -->
+ <link rel="icon" type="image/webp" sizes="16x16" href="https://ik.imagekit.io/s95tumxuk/IMG_1085.jpeg?updatedAt=1774445391360">
+ <link rel="icon" type="image/webp" sizes="32x32" href="https://ik.imagekit.io/s95tumxuk/IMG_1085.jpeg?updatedAt=1774445391360">
+ <link rel="icon" type="image/webp" sizes="96x96" href="https://ik.imagekit.io/s95tumxuk/IMG_1085.jpeg?updatedAt=1774445391360">
+ <link rel="apple-touch-icon" sizes="180x180" href="https://ik.imagekit.io/s95tumxuk/IMG_1085.jpeg?updatedAt=1774445391360">
+ 
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Firebase SDKs (v9 compat for easy Realtime DB + Storage) -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="bg-black text-white font-sans">
+    <!-- NAVIGATION BAR -->
+    <nav id="navbar" class="fixed top-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-lg border-b border-white/10">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+            <!-- Logo (circular frame - dynamically loaded from Firebase Storage) -->
+            <div class="flex items-center gap-3">
+                <img id="dynamic-logo" 
+                     src="https://ik.imagekit.io/s95tumxuk/IMG_1085.jpeg" 
+                     alt="Dofen Logo" 
+                     class="w-12 h-12 object-cover rounded-full border-4 border-[#ffd700] shadow-xl">
+                <div>
+                    <span class="text-2xl font-bold tracking-tighter">DOFEN</span>
+                    <span class="text-[#ffd700] text-sm block -mt-1">CONSULTACY SERVICES LTD </span>
+                </div>
+            </div>
+
+            <!-- Desktop Menu -->
+            <ul class="hidden md:flex items-center gap-8 text-sm font-medium">
+                <li><a href="#home" onclick="navigateToSection('home')" class="hover:text-[#ffd700] transition-colors">Home</a></li>
+                <li><a href="#about" onclick="navigateToSection('about')" class="hover:text-[#ffd700] transition-colors">About Us</a></li>
+                <li><a href="#services" onclick="navigateToSection('services')" class="hover:text-[#ffd700] transition-colors">Services</a></li>
+                <li><a href="#projects" onclick="navigateToSection('projects')" class="hover:text-[#ffd700] transition-colors">Projects / Clients</a></li>
+                <li><a href="#careers" onclick="navigateToSection('careers')" class="hover:text-[#ffd700] transition-colors">Careers</a></li>
+                <li><a href="#contact" onclick="navigateToSection('contact')" class="hover:text-[#ffd700] transition-colors">Contact</a></li>
+            </ul>
+
+            <!-- CTA Button -->
+            <a onclick="showQuoteModal()" 
+               class="hidden md:flex items-center gap-2 px-6 py-3 bg-[#ffd700] text-black font-semibold rounded-2xl hover:bg-white transition-all active:scale-95">
+                <i class="fas fa-shield-halved"></i>
+                GET A QUOTE
+            </a>
+
+            <!-- Mobile Hamburger -->
+           <button id="mobile-menu-btn"
+        onclick="toggleMobileMenu()"
+        class="md:hidden w-11 h-11 flex items-center justify-center text-2xl text-white hover:text-[#ffd700]">
+    <i id="hamburger-icon" class="fas fa-bars"></i>
+</button>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-black/95 backdrop-blur-lg border-t border-white/10 px-6 py-6">
+            <ul class="flex flex-col gap-6 text-lg">
+                <li><a href="#home" onclick="navigateToSection('home');toggleMobileMenu()" class="flex items-center gap-3"><i class="fas fa-home w-5"></i>Home</a></li>
+                <li><a href="#about" onclick="navigateToSection('about');toggleMobileMenu()" class="flex items-center gap-3"><i class="fas fa-info-circle w-5"></i>About Us</a></li>
+                <li><a href="#services" onclick="navigateToSection('services');toggleMobileMenu()" class="flex items-center gap-3"><i class="fas fa-shield-alt w-5"></i>Services</a></li>
+                <li><a href="#projects" onclick="navigateToSection('projects');toggleMobileMenu()" class="flex items-center gap-3"><i class="fas fa-briefcase w-5"></i>Projects / Clients</a></li>
+                <li><a href="#careers" onclick="navigateToSection('careers');toggleMobileMenu()" class="flex items-center gap-3"><i class="fas fa-user-tie w-5"></i>Careers</a></li>
+                <li><a href="#contact" onclick="navigateToSection('contact');toggleMobileMenu()" class="flex items-center gap-3"><i class="fas fa-envelope w-5"></i>Contact</a></li>
+                <li class="pt-4 border-t border-white/10">
+                    <a onclick="showQuoteModal();toggleMobileMenu()" 
+                       class="flex justify-center items-center gap-2 w-full py-4 bg-[#ffd700] text-black font-semibold rounded-3xl">
+                        <i class="fas fa-shield-halved"></i> GET A QUOTE
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- HERO SECTION -->
+    <section id="home" class="min-h-screen flex items-center relative">
+        <div id="hero-background" 
+             class="absolute inset-0 bg-cover bg-center bg-no-repeat"
+             style="background-image: linear-gradient(rgba(0, 31, 63, 0.75), rgba(0, 31, 63, 0.75)), url('https://ik.imagekit.io/s95tumxuk/IMG_1085.jpeg');">
+        </div>
+        
+        <div class="max-w-7xl mx-auto px-6 pt-20 relative z-10">
+            <div class="max-w-2xl">
+                <!-- Glassmorphism badge -->
+                <div class="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 text-[#ffd700] text-sm font-medium px-5 py-2 rounded-3xl mb-6">
+                    <i class="fas fa-lock"></i>
+                    ISO 9001 CERTIFIED • 24/7 OPERATIONS
+                </div>
+                
+                <h1 class="text-6xl md:text-7xl font-bold leading-none tracking-tighter mb-6">
+                    YOUR SAFETY,<br>OUR PRIORITY
+                </h1>
+                <p class="text-xl text-white/80 mb-10">
+                    Professional security solutions for residential, commercial, and VIP clients across Africa .
+                </p>
+                
+                <div class="flex flex-wrap gap-4">
+                    <!-- Quote Modal -->
+<div id="quoteModal" class="fixed inset-0 bg-black/70 hidden flex items-center justify-center z-50">
+    <div class="bg-white rounded-3xl p-8 max-w-lg w-full mx-4 shadow-2xl">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-2xl font-bold text-gray-800">Request a Quote</h2>
+            <button onclick="hideQuoteModal()" 
+                    class="text-gray-500 hover:text-gray-700 text-3xl leading-none">&times;</button>
+        </div>
+
+        <form id="quoteForm" onsubmit="handleQuoteSubmit(event)">
+            <div class="space-y-5">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                    <input type="text" id="name" required
+                           class="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:outline-none focus:border-[#ffd700]">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                    <input type="email" id="email" required
+                           class="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:outline-none focus:border-[#ffd700]">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+                    <input type="tel" id="phone"
+                           class="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:outline-none focus:border-[#ffd700]">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Service Needed</label>
+                    <select id="service" required
+                            class="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:outline-none focus:border-[#ffd700]">
+                        <option value="">Select a service...</option>
+                        <option value="Web Development">Web Development</option>
+                        <option value="Mobile App">Mobile App Development</option>
+                        <option value="UI/UX Design">UI/UX Design</option>
+                        <option value="Digital Marketing">Digital Marketing</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Project Description</label>
+                    <textarea id="description" rows="4" required
+                              class="w-full px-4 py-3 border border-gray-300 rounded-3xl focus:outline-none focus:border-[#ffd700]"></textarea>
+                </div>
+            </div>
+
+            <button type="submit"
+                    class="mt-8 w-full py-4 bg-[#ffd700] hover:bg-yellow-400 text-black font-semibold text-lg rounded-3xl transition-all active:scale-95">
+                Submit Quote Request
+            </button>
+        </form>
+    </div>
+</div>
+
+<script>
+// Show Modal
+function showQuoteModal() {
+    document.getElementById('quoteModal').classList.remove('hidden');
+    document.getElementById('quoteModal').classList.add('flex');
+}
+
+// Hide Modal
+function hideQuoteModal() {
+    const modal = document.getElementById('quoteModal');
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+    document.getElementById('quoteForm').reset();
+}
+</script>
+
+                    <button onclick="navigateToSection('contact')" 
+                            class="px-8 py-5 border-2 border-white/70 hover:border-[#ffd700] hover:text-[#ffd700] text-lg font-semibold rounded-3xl flex items-center gap-3 transition-all">
+                        <i class="fas fa-phone"></i>
+                        CONTACT US
+                    </button>
+                </div>
+
+                <!-- Trust signals -->
+                <div class="flex items-center gap-8 mt-12 text-sm">
+                    <div class="flex items-center gap-2">
+                        <i class="fas fa-check-circle text-[#ffd700]"></i>
+                        <span>24/7 Rapid Response</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <i class="fas fa-check-circle text-[#ffd700]"></i>
+                        <span>Fully Licensed &amp; Insured</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <i class="fas fa-check-circle text-[#ffd700]"></i>
+                        <span>150+ Happy Clients</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scroll indicator -->
+        <div class="absolute bottom-10 left-1/2 flex flex-col items-center gap-2 text-white/60 text-xs tracking-widest">
+            <span>SCROLL FOR MORE</span>
+            <i class="fas fa-chevron-down animate-bounce"></i>
+        </div>
+
+        <!-- Quick services overview (floating glass cards) -->
+        <div class="hidden xl:grid absolute bottom-12 right-12 grid-cols-3 gap-4 max-w-xs">
+            <div onclick="showServiceDetail(0)" class="glass-card cursor-pointer p-4 rounded-3xl text-center hover:scale-105 transition-transform">
+                <i class="fas fa-user-shield text-4xl text-[#ffd700] mb-3"></i>
+                <p class="text-sm font-medium">Security Guards</p>
+            </div>
+            <div onclick="showServiceDetail(1)" class="glass-card cursor-pointer p-4 rounded-3xl text-center hover:scale-105 transition-transform">
+                <i class="fas fa-video text-4xl text-[#ffd700] mb-3"></i>
+                <p class="text-sm font-medium">CCTV Systems</p>
+            </div>
+            <div onclick="showServiceDetail(2)" class="glass-card cursor-pointer p-4 rounded-3xl text-center hover:scale-105 transition-transform">
+                <i class="fas fa-bell text-4xl text-[#ffd700] mb-3"></i>
+                <p class="text-sm font-medium">Alarm Systems</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- STATS BAR -->
+    <div class="bg-[#001f3f] py-8">
+        <div class="max-w-7xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+            <div>
+                <div id="stat-years" class="text-5xl font-bold text-[#ffd700]">5</div>
+                <p class="text-white/70 text-sm tracking-widest">YEARS OF EXCELLENCE</p>
+            </div>
+            <div>
+                <div id="stat-clients" class="text-5xl font-bold text-[#ffd700]">220</div>
+                <p class="text-white/70 text-sm tracking-widest">CLIENTS PROTECTED</p>
+            </div>
+            <div>
+                <div id="stat-guards" class="text-5xl font-bold text-[#ffd700]">1050</div>
+                <p class="text-white/70 text-sm tracking-widest">TRAINED GUARDS</p>
+            </div>
+            <div>
+                <div id="stat-response" class="text-5xl font-bold text-[#ffd700]">4.8s</div>
+                <p class="text-white/70 text-sm tracking-widest">AVERAGE RESPONSE TIME</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ABOUT US SECTION -->
+    <section id="about" class="py-20 bg-black">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="grid md:grid-cols-12 gap-16 items-center">
+                <!-- Left text -->
+                <div class="md:col-span-7">
+                    <div class="inline-flex items-center px-6 py-2 bg-white/10 backdrop-blur-md rounded-3xl text-[#ffd700] text-sm mb-6">
+                        <span class="w-2 h-2 bg-[#ffd700] rounded-full animate-pulse mr-2"></span>
+                        ESTABLISHED 2021 • KAMPALA, UGANDA
+                    </div>
+                    <h2 class="text-5xl font-bold tracking-tighter mb-6">Protecting what matters most</h2>
+                    <p class="text-lg text-white/80 mb-8">
+                       Dofen Consultacy Services Ltd  was founded with a simple mission: to deliver world-class security with unmatched professionalism and integrity. Today we protect homes, businesses, events, and high-profile individuals across Uganda.
+                    </p>
+                    
+                    <div class="grid grid-cols-2 gap-8">
+                        <div>
+                            <h4 class="text-[#ffd700] text-sm mb-3 font-semibold">OUR MISSION</h4>
+                            <p class="text-white/70">To provide  professional coonsultancy ,training and advisory services that enable organizations to identify risks, enhance safety,comply with international standards and improve operational effectiveness.</p>
+                        </div>
+                        <div>
+                            <h4 class="text-[#ffd700] text-sm mb-3 font-semibold">OUR VISION</h4>
+                            <p class="text-white/70">To become a leading consultancy firm in risk management , safety , and organizational reilience in Africa .</p>
+                        </div>
+                    </div>
+
+                    <!-- Core Values -->
+                    <div class="mt-12">
+                        <h4 class="text-[#ffd700] text-sm mb-6 font-semibold flex items-center gap-2"><i class="fas fa-gem"></i> CORE SERVICE</h4>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                            <div class="glass-card p-6 rounded-3xl">Risk Assessment and Security Consultancy</div>
+                            <div class="glass-card p-6 rounded-3xl">Travel Consultacy and Travel Risk Management </div>
+                            <div class="glass-card p-6 rounded-3xl">Organizational Satey and Compliance Adviory</div>
+                            <div class="glass-card p-6 rounded-3xl">ISO standards Preparation and Compliance </div>
+                            <div class="glass-card p-6 rounded-3xl">Fire Safety Consultancy</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Team preview -->
+                <div class="md:col-span-5">
+                    <h4 class="text-[#ffd700] text-sm mb-6 font-semibold">MEET OUR LEADERSHIP</h4>
+                    <div class="grid grid-cols-2 gap-6" id="team-grid">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SERVICES SECTION -->
+    <section id="services" class="py-20 bg-[#001f3f]">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="flex justify-between items-end mb-12">
+                <div>
+                    <span class="text-[#ffd700] text-sm font-medium">WHAT WE OFFER</span>
+                    <h2 class="text-5xl font-bold tracking-tighter">Comprehensive Security Solutions</h2>
+                </div>
+                <a onclick="navigateToSection('contact')" class="text-[#ffd700] flex items-center gap-2 hover:gap-3 transition-all">
+                    View all services <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8" id="services-grid">
+                <!-- Populated by JS -->
+            </div>
+        </div>
+    </section>
+
+    <!-- PROJECTS / CLIENTS SECTION -->
+    <section id="projects" class="py-20 bg-black">
+        <div class="max-w-7xl mx-auto px-6">
+            <h2 class="text-5xl font-bold tracking-tighter mb-3">Projects &amp; Trusted Clients</h2>
+            <p class="text-white/60 mb-10">Real results. Real protection. View our latest deployments and long-term partnerships.</p>
+            
+            <div id="projects-grid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Dynamically loaded from Firebase Realtime Database -->
+            </div>
+        </div>
+    </section>
+
+    <!-- TESTIMONIALS (on Home) -->
+    <section class="py-20 bg-[#001f3f]">
+        <div class="max-w-7xl mx-auto px-6">
+            <h2 class="text-center text-4xl font-bold mb-12">What Our Clients Say</h2>
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="glass-card p-8 rounded-3xl">
+                    <p class="italic mb-6">"Dofen transformed our office security. Their guards are professional and their CCTV system is top-tier."</p>
+                    <div class="flex items-center gap-4">
+                        <div class="w-10 h-10 bg-white/20 rounded-2xl"></div>
+                        <div>
+                            <div class="font-semibold">Sarah Nakato</div>
+                            <div class="text-xs text-white/60">CEO, Pearl Bank Kampala</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="glass-card p-8 rounded-3xl">
+                    <p class="italic mb-6">"VIP protection for our international conference was flawless. Highly recommend their event security team."</p>
+                    <div class="flex items-center gap-4">
+                        <div class="w-10 h-10 bg-white/20 rounded-2xl"></div>
+                        <div>
+                            <div class="font-semibold">Dr. James Okello</div>
+                            <div class="text-xs text-white/60">Organizer, East Africa Summit</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="glass-card p-8 rounded-3xl">
+                    <p class="italic mb-6">"Residential patrol service gives us total peace of mind. Fast response and friendly staff."</p>
+                    <div class="flex items-center gap-4">
+                        <div class="w-10 h-10 bg-white/20 rounded-2xl"></div>
+                        <div>
+                            <div class="font-semibold">Michael Nsubuga</div>
+                            <div class="text-xs text-white/60">Homeowner, Kololo</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CAREERS SECTION -->
+    <section id="careers" class="py-20 bg-black">
+        <div class="max-w-7xl mx-auto px-6">
+            <h2 class="text-5xl font-bold tracking-tighter mb-3">Join Our Team</h2>
+            <p class="text-white/60 mb-12">We’re always looking for disciplined, trustworthy professionals to grow with us.</p>
+            
+            <div id="careers-grid" class="grid md:grid-cols-3 gap-8">
+                <!-- Populated by JS -->
+            </div>
+
+            <div class="mt-16 text-center">
+                <button onclick="showApplicationModal()" 
+                        class="px-10 py-6 bg-[#ffd700] text-black text-xl font-semibold rounded-3xl inline-flex items-center gap-4 hover:shadow-2xl transition-all">
+                    <i class="fas fa-upload"></i>
+                    SUBMIT YOUR APPLICATION
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- CONTACT SECTION -->
+    <section id="contact" class="py-20 bg-[#001f3f]">
+        <div class="max-w-7xl mx-auto px-6 grid md:grid-cols-12 gap-12">
+            <!-- Form -->
+            <div class="md:col-span-7">
+                <h2 class="text-5xl font-bold tracking-tighter mb-6">Get in touch today</h2>
+                <form id="contact-form" onsubmit="handleContactSubmit(event)" class="space-y-8">
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <input type="text" id="contact-name" placeholder="Your name" required
+                               class="glass-input bg-white/10 border border-white/30 focus:border-[#ffd700] rounded-3xl px-6 py-5 outline-none">
+                        <input type="email" id="contact-email" placeholder="Email address" required
+                               class="glass-input bg-white/10 border border-white/30 focus:border-[#ffd700] rounded-3xl px-6 py-5 outline-none">
+                    </div>
+                    <textarea id="contact-message" rows="5" placeholder="How can we help you?" required
+                              class="glass-input bg-white/10 border border-white/30 focus:border-[#ffd700] rounded-3xl px-6 py-5 outline-none w-full"></textarea>
+                    <button type="submit"
+                            class="w-full md:w-auto px-12 py-5 bg-white text-black font-semibold rounded-3xl flex items-center justify-center gap-3 hover:bg-[#ffd700]">
+                        SEND MESSAGE
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </form>
+            </div>
+
+            <!-- Contact info + map -->
+            <div class="md:col-span-5 space-y-10">
+                <div>
+                    <div class="flex items-center gap-4 mb-6">
+                        <i class="fas fa-phone text-4xl text-[#ffd700]"></i>
+                        <div>
+                            <p class="text-sm text-white/60">CALL US 24/7</p>
+                            <a href="tel:+256706460589" class="text-3xl font-semibold">+256 706 460 589</a>
+                            
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <i class="fas fa-envelope text-4xl text-[#ffd700]"></i>
+                        <div>
+                            <p class="text-sm text-white/60">EMAIL US</p>
+                            <a href="mailto:info@dofenconsultacyservices ltd.com" class="text-3xl font-semibold">info@dofenconsultacyservices Ltd.com</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-card p-6 rounded-3xl">
+                    <h4 class="font-semibold mb-4">OUR OFFICE</h4>
+                    <p class="text-white/80">Plot 15, Security Lane,<br>Kampala, Uganda</p>
+                    <div class="mt-6 rounded-3xl overflow-hidden border border-white/20">
+                        <!-- Google Maps Embed (Kampala placeholder) -->
+                        <iframe width="100%" height="260" style="border:0;" 
+                                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3989.757058147929!2d32.583068!3d0.313000!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x177d7f8e0d8f8e0d%3A0x7b6f8c8e8f8e8f8e!2sKampala%2C%20Uganda!5e0!3m2!1sen!2sug!4v1700000000000" 
+                                allowfullscreen="" loading="lazy"></iframe>
+                    </div>
+                </div>
+
+                <!-- Live Chat Button -->
+                <button onclick="toggleLiveChat()" 
+                        class="fixed bottom-8 right-8 md:right-12 bg-[#ffd700] text-black w-14 h-14 rounded-3xl flex items-center justify-center shadow-2xl hover:scale-110 transition-transform z-50">
+                    <i class="fas fa-comment-dots text-3xl"></i>
+                </button>
+            </div>
+        </div>
+    </section>
+<!-- LICENSE / LEGAL SECTION -->
+<section class="bg-black py-16 border-t border-white/10">
+    <div class="max-w-4xl mx-auto px-6">
+        <h2 class="text-3xl font-bold text-center mb-10 text-[#ffd700]">License &amp; Legal Information</h2>
+        
+        <div class="glass-card p-8 md:p-12 rounded-3xl text-white/80 leading-relaxed text-sm">
+            <h3 class="text-xl font-semibold mb-6 text-white">License to Operate</h3>
+            
+            <p class="mb-6">
+                Dofen Consultacy  Services ltd is a fully licensed and regulated private security company in Uganda.
+                We operate under the authority of the <strong>Uganda Police Force – Private Security Organizations Regulatory Department</strong>.
+            </p>
+            
+            <div class="grid md:grid-cols-2 gap-8 mb-10">
+                <div>
+                    <p class="text-[#ffd700] font-medium mb-2">License Number</p>
+                    <p class="font-mono text-lg">PSO-UG-2023-0456</p>
+                </div>
+                <div>
+                    <p class="text-[#ffd700] font-medium mb-2">Valid Until</p>
+                    <p class="font-medium">31st December 2027</p>
+                </div>
+            </div>
+            
+            <h4 class="font-semibold text-white mb-4">Our Commitments</h4>
+            <ul class="list-disc pl-6 space-y-3 text-white/70">
+                <li>All security personnel are vetted, trained, and certified by the Uganda Police Force.</li>
+                <li>We maintain full public liability insurance coverage for all operations.</li>
+                <li>Our operations comply with the Private Security Organizations Act, 2018 and all relevant Ugandan laws.</li>
+                <li>We use only approved firearms and equipment where licensed.</li>
+                <li>Client confidentiality and data protection are strictly maintained.</li>
+            </ul>
+            
+            <div class="mt-12 pt-8 border-t border-white/10 text-xs text-white/60">
+                <p class="mb-4">
+                    © 2021 – 2026 Dofen consultacy Services ltd . All Rights Reserved.<br>
+                    This website and its contents are the property of Dofen consultacy Services Ltd
+                </p>
+                <p>
+                    Unauthorized use, reproduction, or distribution of any material on this website is strictly prohibited.
+                    For licensing inquiries or verification of our PSO license, please contact us directly.
+                </p>
+            </div>
+        </div>
+        
+        <!-- Certifications Badges -->
+        <div class="flex flex-wrap justify-center gap-8 mt-12 opacity-75">
+            <div class="text-center">
+                <i class="fas fa-shield-halved text-5xl text-[#ffd700]"></i>
+                <p class="text-xs mt-3">UGANDA POLICE<br>PSO LICENSED</p>
+            </div>
+            <div class="text-center">
+                <i class="fas fa-medal text-5xl text-[#ffd700]"></i>
+                <p class="text-xs mt-3">ISO 9001:2015<br>CERTIFIED</p>
+            </div>
+            <div class="text-center">
+                <i class="fas fa-users text-5xl text-[#ffd700]"></i>
+                <p class="text-xs mt-3">FULLY INSURED</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+    <!-- FOOTER -->
+    <footer class="bg-black border-t border-white/10 py-12">
+        <div class="max-w-7xl mx-auto px-6 text-white/60 text-sm flex flex-col md:flex-row justify-between items-center gap-6">
+            <p>&copy; 2026 Dofen consultancy  Security Services. All Rights Reserved.</p>
+            <div class="flex gap-6">
+                <a href="#" class="hover:text-[#ffd700]">Privacy Policy</a>
+                <a href="#" class="hover:text-[#ffd700]">Terms of Service</a>
+               <a href="LICENSE.md" target="_blank" class="hover:text-[#ffd700]">License & Legal</a>
+            </div>
+            <p class="flex items-center gap-2">
+                <i class="fas fa-lock text-[#ffd700]"></i>
+                Secure • Trusted • Professional
+            </p>
+        </div>
+    </footer>
+
+    <!-- SERVICE DETAIL MODAL -->
+    <div id="service-modal" onclick="if(event.target.id === 'service-modal') hideServiceModal()" 
+         class="hidden fixed inset-0 bg-black/80 z-[9999] flex items-center justify-center p-4">
+        <div onclick="event.stopImmediatePropagation()" 
+             class="glass-card max-w-2xl w-full rounded-3xl p-10 max-h-[90vh] overflow-auto">
+            <button onclick="hideServiceModal()" class="float-right text-3xl text-white/40 hover:text-white">&times;</button>
+            <div id="modal-content">
+                <!-- Dynamically injected by JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- QUOTE MODAL -->
+    <div id="quote-modal" onclick="if(event.target.id === 'quote-modal') hideQuoteModal()" 
+         class="hidden fixed inset-0 bg-black/80 z-[9999] flex items-center justify-center p-4">
+        <div onclick="event.stopImmediatePropagation()" class="glass-card max-w-lg w-full rounded-3xl p-8">
+            <h3 class="text-3xl font-bold mb-6">Request a Security Quote</h3>
+            <form onsubmit="handleQuoteSubmit(event)" class="space-y-6">
+                <input type="text" placeholder="Your name / Company" required class="glass-input w-full rounded-3xl px-6 py-4">
+                <input type="tel" placeholder="Phone number" required class="glass-input w-full rounded-3xl px-6 py-4">
+                <textarea placeholder="Describe your security needs (residential, commercial, event, VIP...)" rows="4" required class="glass-input w-full rounded-3xl px-6 py-4"></textarea>
+                <button type="submit" class="w-full py-5 bg-[#ffd700] text-black font-bold rounded-3xl">SUBMIT REQUEST</button>
+            </form>
+            <p class="text-center text-xs text-white/50 mt-6">A specialist will contact you within 30 minutes</p>
+        </div>
+    </div>
+
+    <!-- APPLICATION MODAL -->
+    <div id="application-modal" onclick="if(event.target.id === 'application-modal') hideApplicationModal()" 
+         class="hidden fixed inset-0 bg-black/80 z-[9999] flex items-center justify-center p-4">
+        <div onclick="event.stopImmediatePropagation()" class="glass-card max-w-xl w-full rounded-3xl p-8">
+            <h3 class="text-3xl font-bold mb-6">Apply to Join Dofen Consultacy services limited  </h3>
+            <form id="application-form" onsubmit="handleApplicationSubmit(event)" class="space-y-6">
+                <div class="grid grid-cols-2 gap-4">
+                    <input id="app-name" type="text" placeholder="Full name" required class="glass-input rounded-3xl px-6 py-4">
+                    <input id="app-phone" type="tel" placeholder="Phone" required class="glass-input rounded-3xl px-6 py-4">
+                </div>
+                <input id="app-email" type="email" placeholder="Email" required class="glass-input w-full rounded-3xl px-6 py-4">
+                <select id="app-position" class="glass-input w-full rounded-3xl px-6 py-4">
+                    <option value="">Select position...</option>
+                    <option value="Security Guard">Security Guard</option>
+                    <option value="CCTV Operator">CCTV Operator</option>
+                    <option value="Patrol Supervisor">Patrol Supervisor</option>
+                    <option value="VIP Protection Officer">VIP Protection Officer</option>
+                </select>
+                <!-- CV Upload -->
+                <div class="border border-dashed border-white/30 rounded-3xl p-6 text-center">
+                    <i class="fas fa-cloud-upload-alt text-4xl mb-3 text-[#ffd700]"></i>
+                    <p class="text-sm">Upload CV (PDF or DOC)</p>
+                    <input id="app-cv" type="file" accept=".pdf,.doc,.docx" class="hidden">
+                    <button type="button" onclick="document.getElementById('app-cv').click()" 
+                            class="mt-4 text-xs px-6 py-3 border border-white/30 rounded-3xl">CHOOSE FILE</button>
+                    <p id="cv-filename" class="text-xs text-white/50 mt-2"></p>
+                </div>
+                <button type="submit" class="w-full py-5 bg-[#ffd700] text-black font-bold rounded-3xl">SUBMIT APPLICATION</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- LIVE CHAT WINDOW -->
+    <div id="live-chat-window" class="hidden fixed bottom-24 right-8 md:right-12 w-80 bg-black border border-white/20 rounded-3xl shadow-2xl overflow-hidden z-[99999]">
+        <div class="bg-[#001f3f] px-6 py-4 flex justify-between items-center rounded-t-3xl">
+            <div class="flex items-center gap-3">
+                <div class="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
+                <span class="font-semibold">Live Support • Dofen Consultacy services ltd </span>
+            </div>
+            <button onclick="toggleLiveChat()" class="text-white/40 text-2xl leading-none">&times;</button>
+        </div>
+        <div id="chat-messages" class="h-72 p-6 overflow-y-auto text-sm space-y-4 bg-white/5">
+            <!-- Messages populated by JS -->
+        </div>
+        <div class="p-4 border-t border-white/10 flex gap-3">
+            <input id="chat-input" type="text" placeholder="Type your message..." 
+                   class="flex-1 bg-white/10 rounded-3xl px-6 py-3 text-sm outline-none">
+            <button onclick="sendChatMessage()" class="bg-[#ffd700] text-black px-6 rounded-3xl text-sm font-medium">SEND</button>
+        </div>
+    </div>
+
+    <!-- JS -->
+    <script src="script.js"></script>
+  
+</body>
+</html>

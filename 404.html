@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 - Page Not Found | MarkMellon Security</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .error-container {
+            animation: fadeIn 0.8s ease forwards;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .shield-icon {
+            animation: shieldPulse 2s infinite ease-in-out;
+        }
+        
+        @keyframes shieldPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.08); }
+        }
+    </style>
+</head>
+<body class="bg-black text-white min-h-screen flex items-center justify-center overflow-hidden">
+    <div class="max-w-2xl mx-auto px-6 text-center error-container">
+        
+        <!-- Large 404 -->
+        <div class="relative mb-8">
+            <h1 class="text-[180px] md:text-[240px] font-black tracking-tighter leading-none text-transparent bg-clip-text bg-gradient-to-b from-zinc-800 to-black select-none">
+                404
+            </h1>
+            
+            <!-- Security Shield Overlay -->
+            <div class="absolute inset-0 flex items-center justify-center">
+                <div class="shield-icon text-amber-500 text-[120px] md:text-[160px]">
+                    <i class="fas fa-shield-halved"></i>
+                </div>
+            </div>
+        </div>
+
+        <h2 class="text-4xl md:text-5xl font-bold tracking-tight mb-4">
+            Page Not Found
+        </h2>
+        
+        <p class="text-zinc-400 text-lg md:text-xl max-w-md mx-auto mb-12">
+            The security page you're looking for has either been moved, 
+            removed, or is temporarily unavailable.
+        </p>
+
+        <!-- Action Buttons -->
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <a href="homepage.html" 
+               class="px-10 py-5 bg-amber-500 hover:bg-amber-400 text-black font-semibold rounded-3xl flex items-center justify-center gap-3 transition-all active:scale-95">
+                <i class="fas fa-home"></i>
+                RETURN TO HOME
+            </a>
+            
+            <a href="homepage.html#contact" 
+               class="px-10 py-5 border-2 border-white/30 hover:border-amber-500 hover:text-amber-500 font-semibold rounded-3xl flex items-center justify-center gap-3 transition-all">
+                <i class="fas fa-headset"></i>
+                CONTACT SUPPORT
+            </a>
+        </div>
+
+        <!-- Helpful Links -->
+        <div class="mt-16">
+            <p class="text-zinc-500 text-sm mb-6">You might want to visit:</p>
+            <div class="flex flex-wrap justify-center gap-6 text-sm">
+                <a href="index.html#services" class="hover:text-amber-500 transition-colors">Our Services</a>
+                <a href="index.html#about" class="hover:text-amber-500 transition-colors">About Us</a>
+                <a href="index.html#projects" class="hover:text-amber-500 transition-colors">Projects</a>
+                <a href="index.html#careers" class="hover:text-amber-500 transition-colors">Careers</a>
+            </div>
+        </div>
+
+        <!-- Footer Message -->
+        <div class="mt-20 text-xs text-zinc-600 flex items-center justify-center gap-2">
+            <i class="fas fa-lock"></i>
+            <span>MarkMellon Security Services • Your Safety, Our Priority</span>
+        </div>
+    </div>
+
+    <script>
+        // Optional: Auto redirect to home after 30 seconds
+        setTimeout(() => {
+            if (confirm("Would you like to return to the homepage?")) {
+                window.location.href = "homepage.html";
+            }
+        }, 30000);
+    </script>
+</body>
+</html>

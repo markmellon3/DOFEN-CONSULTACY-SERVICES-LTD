@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Security Admin Panel</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
+    <link rel="stylesheet" href="admin-styles.css">
+</head>
+<body class="bg-zinc-950 text-zinc-200">
+    <!-- LOGIN PAGE -->
+    <div id="login-page" class="min-h-screen flex items-center justify-center bg-zinc-950">
+        <div class="max-w-md w-full mx-4">
+            <div class="text-center mb-10">
+                <div class="inline-flex items-center gap-3 mb-6">
+                    <div class="w-14 h-14 bg-amber-500 rounded-2xl flex items-center justify-center text-3xl">🔒</div>
+                    <div>
+                        <h1 class="text-3xl font-bold tracking-tight">Security</h1>
+                        <p class="text-amber-500 text-sm">ADMIN PANEL</p>
+                    </div>
+                </div>
+                <h2 class="text-2xl font-semibold">Secure Access</h2>
+            </div>
+
+            <div class="bg-zinc-900 border border-zinc-800 rounded-3xl p-8">
+                <form id="login-form" onsubmit="handleLogin(event)">
+                    <div class="mb-6">
+                        <label class="block text-sm text-zinc-400 mb-2">Email Address</label>
+                        <input id="login-email" type="email" required
+                               class="w-full bg-zinc-800 border border-zinc-700 focus:border-amber-500 rounded-2xl px-5 py-4 outline-none">
+                    </div>
+                    <div class="mb-8">
+                        <label class="block text-sm text-zinc-400 mb-2">Password</label>
+                        <input id="login-password" type="password" required
+                               class="w-full bg-zinc-800 border border-zinc-700 focus:border-amber-500 rounded-2xl px-5 py-4 outline-none">
+                    </div>
+                    <button type="submit"
+                            class="w-full py-4 bg-amber-500 hover:bg-amber-400 text-black font-semibold rounded-2xl transition-all">
+                        SIGN IN
+                    </button>
+                </form>
+                <p id="login-error" class="text-red-500 text-sm mt-4 text-center hidden"></p>
+            </div>
+            
+            <p class="text-center text-xs text-zinc-500 mt-8">
+                Only authorized administrators can access this panel
+            </p>
+        </div>
+    </div>
+
+    <!-- ADMIN DASHBOARD -->
+    <div id="dashboard-page" class="hidden min-h-screen flex">
+        <!-- Sidebar -->
+        <div class="w-72 bg-zinc-900 border-r border-zinc-800 flex flex-col">
+            <div class="p-6 border-b border-zinc-800">
+                <div class="flex items-center gap-3">
+                    <img id="admin-logo" src="https://picsum.photos/id/1015/80/80" alt="Logo" 
+                         class="w-9 h-9 rounded-2xl object-cover border border-amber-500">
+                    <div>
+                        <span class="font-bold text-xl">MarkMellon</span>
+                        <span class="block text-[10px] text-amber-500 -mt-1">ADMIN</span>
+                    </div>
+                </div>
+            </div>
+
+            <nav class="flex-1 p-4">
+                <ul class="space-y-1">
+                    <li onclick="showSection('dashboard')" class="nav-item active flex items-center gap-4 px-6 py-4 rounded-2xl cursor-pointer">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <span>Dashboard</span>
+                    </li>
+                    <li onclick="showSection('services')" class="nav-item flex items-center gap-4 px-6 py-4 rounded-2xl cursor-pointer">
+                        <i class="fas fa-shield-alt"></i>
+                        <span>Services</span>
+                    </li>
+                    <li onclick="showSection('projects')" class="nav-item flex items-center gap-4 px-6 py-4 rounded-2xl cursor-pointer">
+                        <i class="fas fa-briefcase"></i>
+                        <span>Projects</span>
+                    </li>
+                    <li onclick="showSection('jobs')" class="nav-item flex items-center gap-4 px-6 py-4 rounded-2xl cursor-pointer">
+                        <i class="fas fa-user-tie"></i>
+                        <span>Job Listings</span>
+                    </li>
+                    <li onclick="showSection('messages')" class="nav-item flex items-center gap-4 px-6 py-4 rounded-2xl cursor-pointer">
+                        <i class="fas fa-envelope"></i>
+                        <span>Messages <span id="msg-count" class="ml-auto bg-red-500 text-white text-xs px-2 py-0.5 rounded-full hidden">0</span></span>
+                    </li>
+                    <li onclick="showSection('applications')" class="nav-item flex items-center gap-4 px-6 py-4 rounded-2xl cursor-pointer">
+                        <i class="fas fa-file-upload"></i>
+                        <span>Applications <span id="app-count" class="ml-auto bg-red-500 text-white text-xs px-2 py-0.5 rounded-full hidden">0</span></span>
+                    </li>
+                    <li onclick="showSection('quotes')" class="nav-item flex items-center gap-4 px-6 py-4 rounded-2xl cursor-pointer">
+                       <i class="fas fa-file-invoice"></i>
+                           <span>Quote Requests 
+                           <span id="quote-count" 
+                           class="ml-auto bg-amber-500 text-white text-xs px-2 py-0.5 rounded-full hidden">0</span>
+                          </span>
+                    </li>
+                </ul>
+            </nav>
+
+            <div class="p-6 border-t border-zinc-800">
+                <button onclick="logout()" 
+                        class="w-full flex items-center justify-center gap-3 py-4 text-red-400 hover:bg-zinc-800 rounded-2xl">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-1 overflow-auto">
+            <!-- Top Bar -->
+            <div class="bg-zinc-900 border-b border-zinc-800 px-8 py-5 flex items-center justify-between sticky top-0 z-10">
+                <h1 id="page-title" class="text-2xl font-semibold">Dashboard</h1>
+                
+                <div class="flex items-center gap-6">
+                   <!-- Notification Bell -->
+<div onclick="toggleNotifications()" class="relative cursor-pointer">
+    <i class="fas fa-bell text-2xl"></i>
+    <span id="notification-badge" 
+          class="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-medium w-5 h-5 flex items-center justify-center rounded-full hidden">0</span>
+                        <span id="notification-badge" 
+                              class="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] w-5 h-5 flex items-center justify-center rounded-full hidden">0</span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <div class="text-right">
+                            <div id="admin-name" class="font-medium text-sm">Admin</div>
+                            <div class="text-xs text-zinc-500">markmellon.admin</div>
+                        </div>
+                        <div class="w-9 h-9 bg-zinc-700 rounded-2xl flex items-center justify-center text-xl">👤</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dashboard Content -->
+            <div id="content-area" class="p-8">
+                <!-- Will be switched by JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- MODALS (Add/Edit, Confirm Delete, Notifications) will be injected by JS -->
+
+    <script src="admin-script.js"></script>
+</body>
+</html>

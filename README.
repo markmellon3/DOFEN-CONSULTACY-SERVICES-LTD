@@ -1,0 +1,41 @@
+# Mark Security Services
+
+A modern, secure, and professional website for **MarkMellon Security Services** — a leading private security company in Uganda.
+
+> **Your Safety, Our Priority**
+
+## ✨ Features
+
+### Public Website
+- Fully responsive dark-themed design (Black, Navy Blue & Gold accents)
+- Glassmorphism effects and smooth animations
+- Full-screen hero section with security imagery
+- Services showcase with modal details
+- Dynamic Projects / Clients gallery
+- Careers page with job application form
+- Contact form with Google Maps embed
+- Mobile-optimized navigation with slide-in menu
+- 404, 500, 403 & Maintenance error pages
+
+### Admin Panel
+- Secure login with Firebase Authentication
+- Real-time Dashboard with key statistics
+- Full CRUD operations for:
+  - Services
+  - Projects
+  - Job Listings
+- View and manage Contact Messages
+- View Job Applications (with CV download support)
+- Real-time notifications for new messages & applications
+- Responsive sidebar navigation
+
+## 🛠 Tech Stack
+
+- **Frontend**: HTML5, Tailwind CSS, Vanilla JavaScript
+- **Backend/Database**: Firebase Realtime Database
+- **Authentication**: Firebase Authentication
+- **File Storage**: Firebase Storage (for logos, images, CVs)
+- **Icons**: Font Awesome 6
+- **Animations**: CSS + Tailwind transitions
+
+## 📁 Project Structure

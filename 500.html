@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>500 - Server Error | MarkMellon Security</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        .error-container { animation: fadeIn 1s ease forwards; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .alert-icon { animation: alertPulse 2s infinite; }
+        @keyframes alertPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.15); }
+        }
+    </style>
+</head>
+<body class="bg-black text-white min-h-screen flex items-center justify-center">
+    <div class="max-w-xl mx-auto px-6 text-center error-container">
+        <div class="mb-8">
+            <i class="fas fa-exclamation-triangle text-8xl text-red-500 alert-icon"></i>
+        </div>
+        
+        <h1 class="text-7xl font-black tracking-tighter mb-4">500</h1>
+        <h2 class="text-4xl font-bold mb-6">Internal Server Error</h2>
+        
+        <p class="text-zinc-400 text-lg mb-12 max-w-md mx-auto">
+            Our security systems encountered an unexpected issue.<br>
+            Our team has been notified and is working to resolve it.
+        </p>
+
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <a href="homepage.html" 
+               class="px-8 py-5 bg-amber-500 hover:bg-amber-400 text-black font-semibold rounded-3xl flex items-center justify-center gap-3 transition-all">
+                <i class="fas fa-home"></i> RETURN HOME
+            </a>
+            <a href="homepage.html#contact" 
+               class="px-8 py-5 border border-white/40 hover:border-amber-500 hover:text-amber-500 rounded-3xl flex items-center justify-center gap-3 transition-all">
+                <i class="fas fa-headset"></i> CONTACT SUPPORT
+            </a>
+        </div>
+
+        <div class="mt-16 text-xs text-zinc-600">
+            <p>Error Code: INTERNAL-500 • Time: <span id="current-time"></span></p>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('current-time').textContent = new Date().toLocaleString();
+    </script>
+</body>
+</html>
