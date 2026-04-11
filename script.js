@@ -642,51 +642,226 @@ function handleClickOutside(event) {
     }
 }
 
-// Simple live chat
-let chatOpen = false
+// ====================== SMART LIVE CHAT WITH ENHANCED KEYWORDS + GEMINI AI ======================
+
+let chatOpen = false;
+let chatListener = null;
+
+// Add your Gemini API key here (get it from https://aistudio.google.com/)
+const GEMINI_API_KEY = "AIzaSyAs-Kava5bQh8PKXTxlbCTJGWAMbnYpLtc"; // ←←← CHANGE THIS
+
+const botResponses = {
+    "security guard": "We provide highly trained armed and unarmed security guards for residential, commercial, and industrial properties in Kampala. Would you like a custom quote?",
+    "cctv": "Our CCTV systems include high-resolution cameras, AI motion detection, night vision, and 24/7 remote monitoring from our Kampala control room.",
+    "alarm": "Our alarm systems deliver instant alerts to your phone and our rapid response team. They integrate with police and emergency services.",
+    "event security": "We offer professional event security for concerts, weddings, conferences, and corporate functions — including crowd control and VIP lanes.",
+    "vip protection": "Our executive & VIP protection service includes close protection officers, advance route surveys, and discreet surveillance.",
+    "patrol": "We run GPS-tracked mobile patrols with an average response time of under 5 minutes across Greater Kampala.",
+    "price": "Pricing depends on your specific needs and location. Tell me more details and we can prepare a tailored quote quickly.",
+    "cost": "Our rates are competitive. Would you like a free quote for security guards, CCTV, or another service?",
+    "quote": "Excellent! What service interests you most? (Security Guards, CCTV, Alarm Systems, Event Security, or VIP Protection?)",
+    "contact us": "You can reach our team directly on +256 788 443524 or email info@dofenconsultancyserviceltd.com. We usually reply within 30 minutes.",
+    "phone": "Call us anytime on +256 788 443 524 during business hours. Our control room operates 24/7.",
+    "email": "Send us an email at info@dofenconsultancyserviceltd.com or use the quote form on our website.",
+    "location": "We are based in Kampala and serve the entire Greater Kampala area, including Entebbe, Mukono, and Wakiso.",
+    "kampala": "Yes, we are a local Kampala-based security company with rapid response across the city.",
+    "how much": "Costs vary by service type and duration. Fill our quick quote form or tell me your requirements for an accurate estimate.",
+    "response time": "Our average rapid response time is 4.8 minutes in Greater Kampala thanks to GPS-tracked vehicles.",
+    "hello": "Hello! How can Dofen Consultacy services ltd help protect you today?",
+    "hi": "Hi there! Looking for reliable security services in Kampala?"
+};
+
+const quickSuggestions = [
+    "Security Guards",
+    "CCTV Installation",
+    "Alarm Systems",
+    "Event Security",
+    "VIP Protection",
+    "Get a Quote",
+    "Contact Us",
+    "Response Time"
+];
+
+// Toggle chat window
 function toggleLiveChat() {
-    const win = document.getElementById('live-chat-window')
-    chatOpen = !chatOpen
-    win.classList.toggle('hidden', !chatOpen)
-    if (chatOpen && document.getElementById('chat-messages').children.length === 0) {
-        // Welcome message
-        const msg = document.createElement('div')
-        msg.className = 'text-[#ffd700] text-xs'
-        msg.textContent = 'Hello! How can our security team help you today?'
-        document.getElementById('chat-messages').appendChild(msg)
+    const win = document.getElementById('live-chat-window');
+    if (!win) return;
+    
+    chatOpen = !chatOpen;
+    win.classList.toggle('hidden', !chatOpen);
+    
+    const messagesContainer = document.getElementById('chat-messages');
+    
+    if (chatOpen && messagesContainer.children.length === 0) {
+        addBotMessage("Hello! How can our security team assist you today?");
+        showQuickSuggestions(messagesContainer);
+    }
+    
+    if (chatOpen) startChatListener();
+    else stopChatListener();
+}
+
+// Add bot message to UI
+function addBotMessage(text) {
+    const container = document.getElementById('chat-messages');
+    if (!container) return;
+    
+    const div = document.createElement('div');
+    div.className = 'text-left';
+    div.innerHTML = `<span class="inline-block bg-white/10 px-5 py-3 rounded-3xl rounded-bl-none text-sm">${text}</span>`;
+    container.appendChild(div);
+    container.scrollTop = container.scrollHeight;
+    
+    setTimeout(() => showQuickSuggestions(container), 700);
+}
+
+// Show quick reply buttons
+function showQuickSuggestions(container) {
+    let row = container.querySelector('.suggestions-row');
+    if (row) row.remove();
+    
+    row = document.createElement('div');
+    row.className = 'suggestions-row flex flex-wrap gap-2 mt-3 px-2';
+    
+    quickSuggestions.forEach(sug => {
+        const btn = document.createElement('button');
+        btn.className = 'text-xs bg-white/10 hover:bg-[#ffd700] hover:text-black px-4 py-2 rounded-3xl transition-all';
+        btn.textContent = sug;
+        btn.onclick = () => sendSuggestedMessage(sug);
+        row.appendChild(btn);
+    });
+    
+    container.appendChild(row);
+    container.scrollTop = container.scrollHeight;
+}
+
+// Send message from suggestion button
+function sendSuggestedMessage(text) {
+    const messages = document.getElementById('chat-messages');
+    const userDiv = document.createElement('div');
+    userDiv.className = 'text-right';
+    userDiv.innerHTML = `<span class="inline-block bg-[#ffd700] text-black px-5 py-2 rounded-3xl rounded-br-none text-sm">${text}</span>`;
+    messages.appendChild(userDiv);
+    messages.scrollTop = messages.scrollHeight;
+    
+    saveMessageToFirebase(text, false);
+    
+    // Generate reply
+    getBotReply(text);
+}
+
+// Send typed message
+function sendChatMessage() {
+    const input = document.getElementById('chat-input');
+    const text = input.value.trim();
+    if (!text) return;
+    
+    const messages = document.getElementById('chat-messages');
+    const userDiv = document.createElement('div');
+    userDiv.className = 'text-right';
+    userDiv.innerHTML = `<span class="inline-block bg-[#ffd700] text-black px-5 py-2 rounded-3xl rounded-br-none text-sm">${text}</span>`;
+    messages.appendChild(userDiv);
+    messages.scrollTop = messages.scrollHeight;
+    
+    saveMessageToFirebase(text, false);
+    input.value = '';
+    
+    getBotReply(text);
+}
+
+// Decide between keyword reply or AI reply
+async function getBotReply(userText) {
+    const lower = userText.toLowerCase();
+    
+    // First try keyword matching (fast)
+    for (let key in botResponses) {
+        if (lower.includes(key)) {
+            setTimeout(() => addBotMessage(botResponses[key]), 600);
+            return;
+        }
+    }
+    
+    // No keyword match → use Gemini AI
+    addBotMessage("Thinking..."); // temporary message
+    
+    try {
+        const aiReply = await getGeminiReply(userText);
+        // Remove "Thinking..." and show real reply
+        const container = document.getElementById('chat-messages');
+        container.removeChild(container.lastChild);
+        addBotMessage(aiReply);
+    } catch (e) {
+        console.error(e);
+        const container = document.getElementById('chat-messages');
+        container.removeChild(container.lastChild);
+        addBotMessage("Thank you. Our team will contact you shortly with more information.");
     }
 }
 
-function sendChatMessage() {
-    const input = document.getElementById('chat-input')
-    const text = input.value.trim()
-    if (!text) return
-
-    const messages = document.getElementById('chat-messages')
-    const userMsg = document.createElement('div')
-    userMsg.className = 'text-right'
-    userMsg.innerHTML = `<span class="inline-block bg-[#ffd700] text-black px-5 py-2 rounded-3xl rounded-br-none">${text}</span>`
-    messages.appendChild(userMsg)
-    input.value = ''
-
-    // Simulate reply
-    setTimeout(() => {
-        const reply = document.createElement('div')
-        reply.className = 'text-left'
-        reply.innerHTML = `<span class="inline-block bg-white/10 px-5 py-2 rounded-3xl rounded-bl-none">Thank you. A live agent will reply shortly.</span>`
-        messages.appendChild(reply)
-        messages.scrollTop = messages.scrollHeight
-    }, 1200)
-
-    messages.scrollTop = messages.scrollHeight
+// Call Google Gemini API
+async function getGeminiReply(prompt) {
+    if (!GEMINI_API_KEY || GEMINI_API_KEY === "AIzaSyAs-Kava5bQh8PKXTxlbCTJGWAMbnYpLtc") {
+        return "Thank you for your message. One of our security experts will reply soon.";
+    }
+    
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+    
+    const systemPrompt = `You are a helpful customer support agent for dofenconsultancyserviceltd Services in Kampala, Uganda. 
+    We specialize in security guards, CCTV installation & monitoring, alarm systems, event security, VIP protection, and rapid response patrols. 
+    Be professional, friendly, and concise. Always offer to provide a quote or direct them to contact us.`;
+    
+    const response = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            contents: [{
+                parts: [
+                    { text: systemPrompt },
+                    { text: "User question: " + prompt }
+                ]
+            }]
+        })
+    });
+    
+    const data = await response.json();
+    return data.candidates?.[0]?.content?.parts?.[0]?.text ||
+        "Thank you. Our team will get back to you shortly.";
 }
 
-// Smooth navigation
-function navigateToSection(section) {
-    document.getElementById(section).scrollIntoView({ behavior: 'smooth' })
+// Save to Firebase (for records / possible admin view)
+function saveMessageToFirebase(text, isAdmin) {
+    if (!db) return;
+    db.ref('liveChat/messages').push({
+        text: text,
+        isAdmin: isAdmin,
+        timestamp: firebase.database.ServerValue.TIMESTAMP || Date.now()
+    });
 }
 
+// Real-time listener (for future admin replies)
+function startChatListener() {
+    if (!db || chatListener) return;
+    const messagesRef = db.ref('liveChat/messages');
+    const container = document.getElementById('chat-messages');
+    
+    chatListener = messagesRef.orderByChild('timestamp').limitToLast(30).on('child_added', (snapshot) => {
+        const data = snapshot.val();
+        if (!data || !data.isAdmin) return;
+        
+        const div = document.createElement('div');
+        div.className = 'text-left';
+        div.innerHTML = `<span class="inline-block bg-white/10 px-5 py-3 rounded-3xl rounded-bl-none text-sm">${data.text}</span>`;
+        container.appendChild(div);
+        container.scrollTop = container.scrollHeight;
+    });
+}
 
+function stopChatListener() {
+    if (chatListener && db) {
+        db.ref('liveChat/messages').off('child_added', chatListener);
+        chatListener = null;
+    }
+}
 
 // Main initialization
 document.addEventListener('DOMContentLoaded', () => {
@@ -698,5 +873,5 @@ document.addEventListener('DOMContentLoaded', () => {
     animateStats()
 
     // Make logo clickable (demo)
-    console.log('%c🚀 MarkMellon Security Services website ready!', 'background:#ffd700;color:#001f3f;font-size:13px;padding:2px 6px;border-radius:4px')
+    console.log('%c🚀 dofenconsultancyserviceltd Services website ready!', 'background:#ffd700;color:#001f3f;font-size:13px;padding:2px 6px;border-radius:4px')
 })
